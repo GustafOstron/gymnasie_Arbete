@@ -1,6 +1,6 @@
-package GamePart;
+package src.GamePart;
 
-import Neurals.NeuralNetwork;
+import src.Neurals.NeuralNetwork;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-public class EffectiverNeuralTrainer extends NeuralTrainer{
+public class EffectiverNeuralTrainer extends NeuralTrainer {
     double topdownScoreKofficient = 1;
 
 

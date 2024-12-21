@@ -1,16 +1,13 @@
-package GamePart;
+package src.GamePart;
 
-import Neurals.NeuralNetwork;
-import Neurals.Neuron;
-import Neurals.NeuronLayer;
-
+import src.Neurals.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
 public class NeuralTrainer {
     int mutationRate, generationSize;
-    String directoryRoot = "C:/Users/gustafcarl.ostrom/Min enhet/Programering Tillämpad/gymnasieprojekt/src/";
+    public String directoryRoot = "C:/Users/gustafcarl.ostrom/Min enhet/Programering Tillämpad/gymnasieprojekt/src/";
     public Game game = new Game();
 
     public NeuralTrainer(double mutationRate, int generationSize, int fileNr) throws IOException, InterruptedException {
@@ -134,7 +131,7 @@ public class NeuralTrainer {
         return neuronInputs;
     }
 
-    List<NeuralNetwork> createGen(NeuralNetwork nnw){
+    public List<NeuralNetwork> createGen(NeuralNetwork nnw){
         List<NeuralNetwork> l = new ArrayList<>();
         NeuralNetwork temp = nnw;
         for (int i = 0; i < generationSize; i++) {

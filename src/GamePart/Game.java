@@ -1,4 +1,4 @@
-package GamePart;
+package src.GamePart;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,7 +38,7 @@ public class Game extends JFrame {
         WindowListener exitListener = new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                File myObj = new File("gymnasieprojekt/src/GamePart/highScore.txt");
+                File myObj = new File("src/GamePart/highScore.txt");
                 try {
                     FileWriter myWriter = new FileWriter(myObj);
                     myWriter.write(highScore + "");
@@ -83,7 +83,7 @@ public class Game extends JFrame {
             if (playingField[1][i] == playingField[2][i]) return false;
             if (playingField[2][i] == playingField[3][i]) return false;
         }
-        File myObj = new File("gymnasieprojekt/src/GamePart/highScore.txt");
+        File myObj = new File("src/GamePart/highScore.txt");
         try {
             FileWriter myWriter = new FileWriter(myObj);
             myWriter.write(highScore + "");

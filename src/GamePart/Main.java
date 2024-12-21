@@ -1,4 +1,4 @@
-package GamePart;
+package src.GamePart;
 
 import javax.swing.*;
 import java.awt.event.*;

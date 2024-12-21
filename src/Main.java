@@ -1,7 +1,7 @@
-import GamePart.AveragingTrainer;
-import GamePart.EffectiverNeuralTrainer;
-import GamePart.NeuralTrainer;
-import Neurals.NeuralNetwork;
+package src;
+
+import src.GamePart.*;
+
 
 import java.io.IOException;
 import java.util.Scanner;

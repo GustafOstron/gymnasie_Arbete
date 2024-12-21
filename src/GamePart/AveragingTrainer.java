@@ -1,11 +1,12 @@
 package GamePart;
 
-import Neurals.NeuralNetwork;
+import src.GamePart.NeuralTrainer;
+import src.Neurals.NeuralNetwork;
 
 import java.io.IOException;
 import java.util.List;
 
-public class AveragingTrainer extends NeuralTrainer{
+public class AveragingTrainer extends NeuralTrainer {
     public AveragingTrainer(double mutationRate, int generationSize, int fileNr) throws IOException, InterruptedException {
         super(mutationRate, generationSize, fileNr);
     }
