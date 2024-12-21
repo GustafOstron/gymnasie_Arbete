@@ -17,6 +17,11 @@ public class Main {
         for (int i = 0; i < 1000000; i++) {
             nt.doGen();
             System.out.println("gen "+(i)+" done");
+            if(s.hasNext()){
+                s.nextLine();
+                nt.setGameVis(!nt.game.isVisible());
+                System.out.println(nt.game.isVisible());
+            }
         }
 
          /*

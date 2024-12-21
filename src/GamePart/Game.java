@@ -23,11 +23,12 @@ public class Game extends JFrame {
         this.setTitle("2048");
         this.setSize(800, 1000);
         this.setLayout(new GridLayout(5, 4, 5, 5));
-        this.setIconImage(new ImageIcon("gymnasieprojekt/src/GamePart/2048Logo.png").getImage());
+        this.setIconImage(new ImageIcon("res/Game/2048Logo.png").getImage());
         this.score = 0;
+        constructUI();
 
         try {
-            File myObj = new File("gymnasieprojekt/src/GamePart/highScore.txt");
+            File myObj = new File("res/Game/highScore.txt");
             Scanner myReader = new Scanner(myObj);
             highScore = myReader.nextInt();
             myReader.close();
@@ -38,7 +39,7 @@ public class Game extends JFrame {
         WindowListener exitListener = new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                File myObj = new File("src/GamePart/highScore.txt");
+                File myObj = new File("res/Game/highScore.txt");
                 try {
                     FileWriter myWriter = new FileWriter(myObj);
                     myWriter.write(highScore + "");
@@ -83,7 +84,7 @@ public class Game extends JFrame {
             if (playingField[1][i] == playingField[2][i]) return false;
             if (playingField[2][i] == playingField[3][i]) return false;
         }
-        File myObj = new File("src/GamePart/highScore.txt");
+        File myObj = new File("res/Game/highScore.txt");
         try {
             FileWriter myWriter = new FileWriter(myObj);
             myWriter.write(highScore + "");
@@ -94,40 +95,50 @@ public class Game extends JFrame {
         return true;
     }
 
-    void setPlayingField(int[][] playingField) {
-        this.playingField = playingField;
+    void constructUI(){
         this.getContentPane().removeAll();
         for (int[] row : playingField) {
             for (int block : row) {
-                if (block == 0) this.add(new EmptyTile());
-                else this.add(new Tile(block));
+                this.add(new Tile(block));
             }
         }
         this.add(new JLabel());
         this.add(new JLabel("Score: " + score));
         this.add(new JLabel("High Score: " + highScore));
         this.add(new JLabel());
-        this.setVisible(gameVis);
+    }
+
+    void setPlayingField(int[][] playingField){
+        this.playingField = playingField;
+        for (int i = 0; i < 16; i++) {
+            ((Tile)this.getContentPane().getComponent(i)).setSize(playingField[i/4][i-(i/4)*4]);
+        }
+        ((JLabel)this.getContentPane().getComponent(17)).setText("Score: " + score);
+        ((JLabel)this.getContentPane().getComponent(17)).setText("High Score: " + highScore);
     }
 
     public void moveUp() {
         setPlayingField(rotate(moveLeft(rotate(this.getPlayingField(), 3)), 1));
         addBlocks();
+        this.setVisible(gameVis);
     }
 
     public void moveDown() {
         setPlayingField(rotate(moveLeft(rotate(this.getPlayingField(), 1)), 3));
         addBlocks();
+        this.setVisible(gameVis);
     }
 
     public void moveRight() {
         setPlayingField(rotate(moveLeft(rotate(this.getPlayingField(), 2)), 2));
         addBlocks();
+        this.setVisible(gameVis);
     }
 
     public void moveLeft() {
         setPlayingField(moveLeft(this.getPlayingField()));
         addBlocks();
+        this.setVisible(gameVis);
     }
 
     public int[][] moveLeft(int[][] field) {
