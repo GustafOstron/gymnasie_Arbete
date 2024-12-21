@@ -1,4 +1,4 @@
-package Neurals;
+package src.Neurals;
 
 import java.io.Serializable;
 import java.util.ArrayList;

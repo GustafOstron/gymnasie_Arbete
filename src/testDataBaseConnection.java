@@ -1,12 +1,12 @@
-import Neurals.NeuralNetwork;
+package src;
+
+import src.Neurals.NeuralNetwork;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.sql.*;
-import java.util.Arrays;
 
 public class testDataBaseConnection {
     private static final String url = "jdbc:mysql://localhost:3306/gymnasieprojekt";
@@ -34,7 +34,6 @@ public class testDataBaseConnection {
             sql = "SELECT ID FROM networks ORDER BY ID DESC LIMIT 1";
             pst = connection.prepareStatement(sql);
             pst.executeQuery();
-            pst.
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot connect the database!", e);
         }
