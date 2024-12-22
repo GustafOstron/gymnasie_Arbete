@@ -6,67 +6,67 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.IntStream;
 
 public class NeuralTrainer {
     double mutationRate;
     int generationSize;
     int delay = 0;
+    NeuralNetwork previousBest;
     public File nnwSaveFile;
-    public Game game = new Game();
+    public Gamable game = new Game();
 
-    public NeuralTrainer(double mutationRate, int generationSize) throws IOException, InterruptedException {
+    public NeuralTrainer(double mutationRate, int generationSize) throws IOException, ClassNotFoundException {
         JFileChooser j = new JFileChooser("saveFiles/Networks");
         Scanner s = new Scanner(System.in);
         j.setDialogTitle("Choose Neural network to evolve");
         j.showOpenDialog(null);
         nnwSaveFile = j.getSelectedFile();
         if(!nnwSaveFile.exists()){
-            nnwSaveFile.createNewFile();
             System.out.println("[nrOfInputs] [nrOfHiddenLayers] [hiddenLayerSize] [nrOfOutputs]");
-            new NeuralNetworkV2(s.nextInt(), s.nextInt(), s.nextInt(), s.nextInt()).writeToFile(nnwSaveFile);
+            previousBest = new NeuralNetwork(s.nextInt(), s.nextInt(), s.nextInt(), s.nextInt());
+            nnwSaveFile.createNewFile();
+            previousBest.writeToFile(nnwSaveFile);
             System.out.println("Created new Neural network");
+        }else {
+            previousBest = NeuralNetwork.readNeuralNetworkFromFile(nnwSaveFile);
         }
         this.mutationRate = mutationRate;
         this.generationSize = generationSize;
     }
 
     public void setGameVis(boolean b){
-        game.setGameVis(b);
+        if (game.getClass() == Game.class) ((Game)game).setGameVis(b);
     }
 
     public void setDelay(int ms){
         this.delay = ms;
     }
 
-    public void doGen() throws InterruptedException, IOException, ClassNotFoundException {
-        NeuralNetworkV2 bestNnw = NeuralNetworkV2.readNeuralNetworkFromFile(nnwSaveFile);
+
+    public void done() throws IOException {
+        previousBest.writeToFile(nnwSaveFile);
+        System.exit(0);
+    }
+
+    public void doGen() throws InterruptedException, IOException, ClassNotFoundException, ExecutionException {
+        NeuralNetwork bestNnw = previousBest;
         int treat = 0;
-        int highestTreat = getTotalTreat(bestNnw, game);
-        List<NeuralNetworkV2> currentGen = createGen(bestNnw);
-        for (int i = 0; i < currentGen.size(); i++) {
-            treat = getTotalTreat(currentGen.get(i), game);
+        int highestTreat = getTotalTreat(bestNnw, game, delay);
+        NeuralNetwork[] currentGen = createGen(bestNnw);
+        for (int i = 0; i < currentGen.length; i++) {
+            treat = getTotalTreat(currentGen[i], game, delay);
             if(treat >= highestTreat){
                 highestTreat=game.getScore();
-                bestNnw = currentGen.get(i);
+                bestNnw = currentGen[i];
             }
         }
-        bestNnw.writeToFile(nnwSaveFile);
+        previousBest = bestNnw;
+        previousBest.writeToFile(nnwSaveFile);
     }
 
-    public int treat(Game game) {
-        int treat = 0;
-        int[][] playfield = game.getPlayingField();
-        if (playfield[3][0] >= playfield[3][1]) {
-            treat++;
-        }
-        if (Arrays.stream(playfield).flatMapToInt(Arrays::stream).max().getAsInt() == playfield[3][0]){
-            treat++;
-        }
-        return treat;
-    }
-
-    public int getTotalTreat(NeuralNetworkV2 nnw, Game game) throws InterruptedException {
+    public static int getTotalTreat(NeuralNetwork nnw, Gamable game, int delay) throws InterruptedException {
         game.reset();
         int totalTreat = 0;
         while (!game.isLost()){
@@ -94,24 +94,19 @@ public class NeuralTrainer {
                         break;
                 }
             }
-            totalTreat += treat(game);
-            if (game.gameVis) {
-                Thread.sleep(delay);
-            }
             if (Arrays.deepEquals(previuosMovePlayingFeild, game.getPlayingField())){
-                return totalTreat+game.getScore();
+                return game.getScore();
             }
         }
-        return totalTreat+game.getScore();
+        return game.getScore();
     }
 
-    public List<NeuralNetworkV2> createGen(NeuralNetworkV2 nnw){
-        List<NeuralNetworkV2> l = new ArrayList<>();
-        NeuralNetworkV2 temp = nnw;
+    public NeuralNetwork[] createGen(final NeuralNetwork nnw) throws InterruptedException, ExecutionException {
+        NeuralNetwork[] l = new NeuralNetwork[generationSize];
         for (int i = 0; i < generationSize; i++) {
-            temp = nnw;
-            temp.mutate(mutationRate);
-            l.add(temp);
+            NeuralNetwork temp = new NeuralNetwork(nnw);
+            l[i] = temp;
+            l[i].mutate(mutationRate);
         }
         return l;
     }

@@ -1,7 +1,5 @@
 package src;
 
-import src.Neurals.NeuralNetwork;
-
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,9 +12,10 @@ public class testDataBaseConnection {
     private static final String password = "password";
 
     public static void main(String[] args) throws IOException, SQLException {
-        writeNetworkToDB(new NeuralNetwork(16,5,100,4));
+        //writeNetworkToDB(new NeuralNetwork(16,5,100,4));
         //tessst(6);
     }
+    /*
     public static int writeNetworkToDB(NeuralNetwork nnw) throws IOException, SQLException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
@@ -50,4 +49,5 @@ public class testDataBaseConnection {
             throw new IllegalStateException("Cannot connect the database!", e);
         }
     }
+     */
 }

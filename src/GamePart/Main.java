@@ -2,21 +2,18 @@ package src.GamePart;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.util.Arrays;
 
-import src.Neurals.NeuralNetworkV2;
-
-import static src.GamePart.NeuralTrainer.blockValueToNeuronInput;
+import src.Neurals.NeuralNetwork;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     static Game game;
-    static NeuralNetworkV2 nnw;
+    static NeuralNetwork nnw;
     public static void main(String[] args) {
         //int[][] playingField = {{2,2,0,4},{0,0,4,4},{512,1024,2048,0},{0,0,0,0}};
         game = new Game();
-        nnw = new NeuralNetworkV2(16,3,20,4);
+        nnw = new NeuralNetwork(16,3,20,4);
         game.addKeyListener(keyListnerBuilder());
         game.addBlocks();
 

@@ -14,3 +14,9 @@ public class testing {
 
     }
 }
+
+
+
+//Dokumenter med databas
+//gör en avrage tränare
+//ge varje tråd ett game så att dom inte behöver skaa ett nytt game object för varje tesk
