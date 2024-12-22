@@ -2,14 +2,21 @@ package src.GamePart;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.Arrays;
+
+import src.Neurals.NeuralNetworkV2;
+
+import static src.GamePart.NeuralTrainer.blockValueToNeuronInput;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     static Game game;
+    static NeuralNetworkV2 nnw;
     public static void main(String[] args) {
         //int[][] playingField = {{2,2,0,4},{0,0,4,4},{512,1024,2048,0},{0,0,0,0}};
         game = new Game();
+        nnw = new NeuralNetworkV2(16,3,20,4);
         game.addKeyListener(keyListnerBuilder());
         game.addBlocks();
 
@@ -43,6 +50,10 @@ public class Main {
                     default:
                         break;
                 }
+
+                double[] dou = blockValueToNeuronInput(game.getPlayingField()).stream().mapToDouble(Double::doubleValue).toArray();
+                double[] det = Arrays.copyOf(dou, 16);
+                System.out.println(nnw.getOutput(det));
             }
         };
     }
