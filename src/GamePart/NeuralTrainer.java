@@ -1,58 +1,49 @@
 package src.GamePart;
 
 import src.Neurals.*;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class NeuralTrainer {
-    int mutationRate, generationSize;
-    public String directoryRoot = "C:/Users/gustafcarl.ostrom/Min enhet/Programering Tillämpad/gymnasieprojekt/src/";
+    double mutationRate;
+    int generationSize;
+    int delay = 0;
+    public File nnwSaveFile;
     public Game game = new Game();
 
-    public NeuralTrainer(double mutationRate, int generationSize, int fileNr) throws IOException, InterruptedException {
-        directoryRoot += "nnwsV2/nnw"+fileNr+"/";
-        this.mutationRate = (int)mutationRate * neuronsInNetwork(new NeuralNetwork(directoryRoot+"previousBest.txt"));
-        this.generationSize = generationSize;
-    }
-    public NeuralTrainer(double mutationRate, int generationSize, NeuralNetwork nnw) throws IOException, InterruptedException {
-        this.mutationRate = (int)mutationRate * neuronsInNetwork(nnw);
-        this.generationSize = generationSize;
-        fileGenerator();
-        nnw.writeToFile(directoryRoot+"previousBest.txt");
-    }
-    public NeuralTrainer(double mutationRate, int generationSize, int inputs, int hiddenLayers, int hiddenLayerSize, int outputs) throws IOException, InterruptedException {
-        NeuralNetwork nnw = new NeuralNetwork(inputs, hiddenLayers, hiddenLayerSize, outputs);
-        nnw.writeToFile(directoryRoot+"previousBest.txt");
-        this.mutationRate = (int)mutationRate * neuronsInNetwork(nnw);
-        this.generationSize = generationSize;
-        fileGenerator();
-    }
-
-    private int neuronsInNetwork(NeuralNetwork nnw){
-        int totalNeurons = 0;
-        for (NeuronLayer nl:nnw.getNeuralLayers()){
-            for (Neuron n: nl.getNeurons()){
-                totalNeurons++;
-            }
+    public NeuralTrainer(double mutationRate, int generationSize) throws IOException, InterruptedException {
+        JFileChooser j = new JFileChooser("saveFiles/Networks");
+        Scanner s = new Scanner(System.in);
+        j.setDialogTitle("Choose Neural network to evolve");
+        j.showOpenDialog(null);
+        nnwSaveFile = j.getSelectedFile();
+        if(!nnwSaveFile.exists()){
+            nnwSaveFile.createNewFile();
+            System.out.println("[nrOfInputs] [nrOfHiddenLayers] [hiddenLayerSize] [nrOfOutputs]");
+            new NeuralNetworkV2(s.nextInt(), s.nextInt(), s.nextInt(), s.nextInt()).writeToFile(nnwSaveFile);
+            System.out.println("Created new Neural network");
         }
-        return totalNeurons;
+        this.mutationRate = mutationRate;
+        this.generationSize = generationSize;
     }
 
     public void setGameVis(boolean b){
         game.setGameVis(b);
     }
 
-    public String getNnwSize(){
-        NeuralNetwork bestNnw = new NeuralNetwork(directoryRoot+"previousBest.txt");
-        return "Inputs:" + bestNnw.getNeuralLayers().get(0).getNeurons().size() + ",  Outputs:"+ bestNnw.getNeuralLayers().get(bestNnw.getNeuralLayers().size()-1).getNeurons().size() + ",  Hidden Layers:"+(bestNnw.getNeuralLayers().size()-2) + ",  Hidden Layer Size:"+bestNnw.getNeuralLayers().get(1).getNeurons().size();
+    public void setDelay(int ms){
+        this.delay = ms;
     }
 
-    public void doGen() throws InterruptedException {
-        NeuralNetwork bestNnw = new NeuralNetwork(directoryRoot+"previousBest.txt");
+    public void doGen() throws InterruptedException, IOException, ClassNotFoundException {
+        NeuralNetworkV2 bestNnw = NeuralNetworkV2.readNeuralNetworkFromFile(nnwSaveFile);
         int treat = 0;
         int highestTreat = getTotalTreat(bestNnw, game);
-        List<NeuralNetwork> currentGen = createGen(bestNnw);
+        List<NeuralNetworkV2> currentGen = createGen(bestNnw);
         for (int i = 0; i < currentGen.size(); i++) {
             treat = getTotalTreat(currentGen.get(i), game);
             if(treat >= highestTreat){
@@ -60,7 +51,7 @@ public class NeuralTrainer {
                 bestNnw = currentGen.get(i);
             }
         }
-        bestNnw.writeToFile(directoryRoot+"previousBest.txt");
+        bestNnw.writeToFile(nnwSaveFile);
     }
 
     public int treat(Game game) {
@@ -75,18 +66,20 @@ public class NeuralTrainer {
         return treat;
     }
 
-    public int getTotalTreat(NeuralNetwork nnw, Game game) throws InterruptedException {
+    public int getTotalTreat(NeuralNetworkV2 nnw, Game game) throws InterruptedException {
         game.reset();
         int totalTreat = 0;
         while (!game.isLost()){
             int[][] previuosMovePlayingFeild = game.getPlayingField();
-            List<Double> res = nnw.getAndCalculateOutputs(blockValueToNeuronInput(game.getPlayingField()));
+            double[] result = nnw.getOutput(blockValueToNeuronInput(game.getPlayingField()));
             Queue<Double> move = new PriorityQueue<>();
             for (int i = 0; i < 4; i++) {
-                move.add(res.get(i));
+                move.add(result[i]);
+
             }
             while(Arrays.deepEquals(previuosMovePlayingFeild, game.getPlayingField()) && !move.isEmpty()) {
-                switch (res.indexOf(move.poll())) {
+                int d = findIndex(result, move.poll());
+                switch (d) {
                     case 0:
                         game.moveRight();
                         break;
@@ -103,7 +96,7 @@ public class NeuralTrainer {
             }
             totalTreat += treat(game);
             if (game.gameVis) {
-                //Thread.sleep(10);
+                Thread.sleep(delay);
             }
             if (Arrays.deepEquals(previuosMovePlayingFeild, game.getPlayingField())){
                 return totalTreat+game.getScore();
@@ -112,28 +105,9 @@ public class NeuralTrainer {
         return totalTreat+game.getScore();
     }
 
-    public static List<Double> blockValueToNeuronInput(int[][] values){
-        return blockValueToNeuronInput(Arrays.stream(values)
-                .flatMapToInt(Arrays::stream)
-                .boxed()
-                .toList());
-    }
-
-    public static List<Double> blockValueToNeuronInput(List<Integer> values){
-        List<Double> neuronInputs = new ArrayList<>();
-        for (int i = 0; i < values.size(); i++) {
-            if(values.get(i) != 0){
-                neuronInputs.add(((Math.log(values.get(i)) / Math.log(2)) / 17)+1);
-            }else {
-                neuronInputs.add((double)0);
-            }
-        }
-        return neuronInputs;
-    }
-
-    public List<NeuralNetwork> createGen(NeuralNetwork nnw){
-        List<NeuralNetwork> l = new ArrayList<>();
-        NeuralNetwork temp = nnw;
+    public List<NeuralNetworkV2> createGen(NeuralNetworkV2 nnw){
+        List<NeuralNetworkV2> l = new ArrayList<>();
+        NeuralNetworkV2 temp = nnw;
         for (int i = 0; i < generationSize; i++) {
             temp = nnw;
             temp.mutate(mutationRate);
@@ -142,21 +116,23 @@ public class NeuralTrainer {
         return l;
     }
 
-    public boolean fileGenerator() throws IOException {
-        int nr = 0;
-        new File(directoryRoot + "nnwsV2").mkdirs();
-        File[] listOfFiles = new File(directoryRoot + "nnwsV2/").listFiles();
-        if(listOfFiles != null && listOfFiles.length != 0){
-            nr = Integer.parseInt(listOfFiles[listOfFiles.length-1].getName().replace("nnw",""));
-            new File(directoryRoot + "nnwsV2/nnw"+(nr+1)).mkdirs();
-        }else{
-            new File(directoryRoot + "nnwsV2/nnw1").mkdirs();
+    public static double[] blockValueToNeuronInput(int[][] values){
+        double[] out = Arrays.stream(values).flatMapToInt(IntStream::of).mapToDouble(Double::valueOf).toArray();
+        for (int i = 0; i < out.length; i++) {
+            if (out[i]!=0){
+                out[i] = ((Math.log(out[i]) / Math.log(2)) / 17)+1;
+            }
         }
-        File file = new File(directoryRoot + "nnwsV2/nnw"+(nr+1)+"/alltimeBest.txt");
-        file.createNewFile();
-        file = new File(directoryRoot + "nnwsV2/nnw"+(nr+1)+"/previousBest.txt");
-        file.createNewFile();
-        directoryRoot += "nnwsV2/nnw"+(nr+1)+"/";
-        return true;
+        return out;
+    }
+
+    public static int findIndex(double[] array, double target) {
+        // Loop through the array
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == target) {
+                return i; // Return the index if found
+            }
+        }
+        return -1; // Return -1 if not found
     }
 }

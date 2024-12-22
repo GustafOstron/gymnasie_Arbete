@@ -50,10 +50,12 @@ public class Main {
                     default:
                         break;
                 }
-
+                /*
                 double[] dou = blockValueToNeuronInput(game.getPlayingField()).stream().mapToDouble(Double::doubleValue).toArray();
                 double[] det = Arrays.copyOf(dou, 16);
-                System.out.println(nnw.getOutput(det));
+                System.out.println(Arrays.toString(nnw.getOutput(det)));
+
+                 */
             }
         };
     }

@@ -7,9 +7,18 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws IOException, InterruptedException{
+    public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
         Scanner s = new Scanner(System.in);
 
+        NeuralTrainer nt = new NeuralTrainer(0.1, 100);
+        nt.setGameVis(true);
+        nt.setDelay(0);
+        for (int i = 0; i < 100; i++) {
+            nt.doGen();
+            System.out.println("gen "+(i)+" done");
+        }
+
+        /*
         //NeuralTrainer nt = new NeuralTrainer(0.25, 250, new NeuralNetwork(16,5,100,4));
         NeuralTrainer nt = new NeuralTrainer(0.25, 250,10);
         System.out.println(nt.getNnwSize());
@@ -24,7 +33,7 @@ public class Main {
             }
         }
 
-         /*
+
 
         AveragingTrainer ant = new AveragingTrainer(0.25 , 1000, new NeuralNetwork(16,5,50,4));
         AveragingTrainer ant = new AveragingTrainer(0.25, 100,10);

@@ -1,11 +1,16 @@
 package Tests;
 
-import src.*;
+import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
 
 public class testing {
-    public static void main(String[] args) {
-        for (int i = 0; i < 16; i++) {
-            System.out.println(i-(i/4)*4);
-        }
+    public static void main(String[] args) throws IOException {
+        JFileChooser j = new JFileChooser("saveFiles/Networks");
+        j.setDialogTitle("Choose Neural network to evolve");
+        j.showOpenDialog(null);
+        File f = j.getSelectedFile();
+        System.out.println(j.getSelectedFile().getAbsoluteFile());
+
     }
 }

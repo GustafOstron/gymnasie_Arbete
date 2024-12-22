@@ -51,6 +51,7 @@ public class Game extends JFrame {
             }
         };
         this.addWindowListener(exitListener);
+        this.setVisible(gameVis);
     }
 
     Game(int[][] playingField) {
