@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.*;
@@ -33,9 +32,9 @@ public class MultiThreadNeuralTrainer extends NeuralTrainer{
         int indexOfHighestScore = -1;
         NeuralNetwork[] currentGen = createGen(bestNnw);
 
-        List<NnwPlayGame> npg = new ArrayList<>();
+        List<NnwPlayGameAvrage> npg = new ArrayList<>();
         for (int i = 0; i < generationSize; i++) {
-            npg.add(new NnwPlayGame(currentGen[i]));
+            npg.add(new NnwPlayGameAvrage(currentGen[i], 5));
         }
 
         List<Future<Integer>> scores = service.invokeAll(npg);
@@ -88,6 +87,25 @@ class NnwPlayGame implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
         return getTotalTreat(nnw, game, 0);
+    }
+}
+
+class NnwPlayGameAvrage implements Callable<Integer> {
+    NeuralNetwork nnw;
+    Gamable game = new GameWhithoutWindow();
+    int timesPlay;
+
+    NnwPlayGameAvrage(NeuralNetwork nnw, int timesPlay){
+        this.nnw = nnw;
+        this.timesPlay = timesPlay;
+    }
+    @Override
+    public Integer call() throws Exception {
+        int avrageScore = 0;
+        for (int i = 0; i < timesPlay; i++) {
+            avrageScore += getTotalTreat(nnw, game, 0);
+        }
+        return (avrageScore / timesPlay);
     }
 }
 

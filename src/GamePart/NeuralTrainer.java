@@ -44,6 +44,25 @@ public class NeuralTrainer {
         this.delay = ms;
     }
 
+    public void setGenerationSize(int generationSize) {
+        this.generationSize = generationSize;
+    }
+
+    public void setMutationRate(double mutationRate) {
+        this.mutationRate = mutationRate;
+    }
+
+    public void setPreviousBest(NeuralNetwork previousBest) {
+        this.previousBest = previousBest;
+    }
+
+    public void setGame(Gamable game) {
+        this.game = game;
+    }
+
+    public void setNnwSaveFile(File nnwSaveFile) {
+        this.nnwSaveFile = nnwSaveFile;
+    }
 
     public void done() throws IOException {
         previousBest.writeToFile(nnwSaveFile);
