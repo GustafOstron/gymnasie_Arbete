@@ -1,5 +1,6 @@
 package src.GamePart;
 
+import src.DataLogger;
 import src.Neurals.NeuralNetwork;
 
 import java.io.File;
@@ -14,7 +15,8 @@ import static src.GamePart.NeuralTrainer.getTotalTreat;
 
 public class MultiThreadNeuralTrainer extends NeuralTrainer{
     int highScore;
-    ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()-2);
+    ExecutorService dbService = Executors.newFixedThreadPool(100);
 
     public MultiThreadNeuralTrainer(double mutationRate, int generationSize) throws IOException, InterruptedException, ClassNotFoundException {
         super(mutationRate, generationSize);
@@ -39,8 +41,10 @@ public class MultiThreadNeuralTrainer extends NeuralTrainer{
 
         List<Future<Integer>> scores = service.invokeAll(npg);
         for (int i = 0; i < generationSize; i++) {
-            if (scores.get(i).get() >= highestScore){
-                highestScore = scores.get(i).get();
+            int score = scores.get(i).get();
+            dbService.submit(new ScoreDbTask(score));
+            if (score >= highestScore){
+                highestScore = score;
                 indexOfHighestScore = i;
             }
         }
@@ -122,5 +126,17 @@ class MutateNetwork implements Callable<NeuralNetwork> {
         NeuralNetwork temp = new NeuralNetwork(nnw);
         temp.mutate(mutationRate);
         return temp;
+    }
+}
+
+class ScoreDbTask implements Runnable {
+    int score;
+    ScoreDbTask(int score) {
+        this.score = score;
+    }
+
+    @Override
+    public void run() {
+        DataLogger.writeScoreToDb(score);
     }
 }
