@@ -12,13 +12,17 @@ public class Main {
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException, ExecutionException {
         Scanner s = new Scanner(System.in);
 
-        MultiThreadNeuralTrainer nt = new MultiThreadNeuralTrainer(0.5, 10000);
+        NeuralTrainer nt = new NeuralTrainer(0.5, 10000);
         nt.setGameVis(false);
         nt.setDelay(300);
+        nt.networkPlayAGame();
+        /*
         for (int i = 0; i < 10000000; i++) {
             nt.doGen();
             System.out.println("gen " + (i) + " done");
         }
+
+         */
         nt.done();
     }
 

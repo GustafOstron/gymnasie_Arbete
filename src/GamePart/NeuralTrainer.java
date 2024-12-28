@@ -149,4 +149,44 @@ public class NeuralTrainer {
         }
         return -1; // Return -1 if not found
     }
+
+    public void networkPlayAGame() throws InterruptedException {
+        game.reset();
+        setGameVis(true);
+        while (!game.isLost()){
+            Thread.sleep(500);
+            int[][] previuosMovePlayingFeild = game.getPlayingField();
+            double[] result = previousBest.getOutput(blockValueToNeuronInput(game.getPlayingField()));
+            Queue<Double> move = new PriorityQueue<>();
+            for (int i = 0; i < 4; i++) {
+                move.add(result[i]);
+
+            }
+            while(Arrays.deepEquals(previuosMovePlayingFeild, game.getPlayingField()) && !move.isEmpty()) {
+                int d = findIndex(result, move.poll());
+                switch (d) {
+                    case 0:
+                        game.moveRight();
+                        break;
+                    case 1:
+                        game.moveLeft();
+                        break;
+                    case 2:
+                        game.moveUp();
+                        break;
+                    case 3:
+                        game.moveDown();
+                        break;
+                }
+            }
+            if (Arrays.deepEquals(previuosMovePlayingFeild, game.getPlayingField())){
+                wait(5000);
+                return;
+            }
+        }
+        Thread.sleep(20000);
+        //wait(5000);
+        return;
+    }
+
 }
