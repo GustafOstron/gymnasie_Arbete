@@ -5,6 +5,7 @@ import src.Neurals.*;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.IntStream;
@@ -15,7 +16,7 @@ public class NeuralTrainer {
     int delay = 0;
     NeuralNetwork previousBest;
     public File nnwSaveFile;
-    public Gamable game = new Game();
+    public Gamable game = new GameWhithoutWindow();
 
     public NeuralTrainer(double mutationRate, int generationSize) throws IOException, ClassNotFoundException {
         JFileChooser j = new JFileChooser("saveFiles/Networks");
@@ -69,7 +70,7 @@ public class NeuralTrainer {
         System.exit(0);
     }
 
-    public void doGen() throws InterruptedException, IOException, ClassNotFoundException, ExecutionException {
+    public void doGen() throws InterruptedException, IOException, ClassNotFoundException, ExecutionException, SQLException {
         NeuralNetwork bestNnw = previousBest;
         int treat = 0;
         int highestTreat = getTotalTreat(bestNnw, game, delay);

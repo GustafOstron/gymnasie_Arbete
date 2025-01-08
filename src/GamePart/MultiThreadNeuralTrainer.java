@@ -6,17 +6,18 @@ import src.Neurals.NeuralNetwork;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.*;
 
+import static src.DataLogger.insertAllScores;
 import static src.GamePart.NeuralTrainer.getTotalTreat;
 
 public class MultiThreadNeuralTrainer extends NeuralTrainer{
     int highScore;
-    ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()-2);
-    ExecutorService dbService = Executors.newFixedThreadPool(100);
+    ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     public MultiThreadNeuralTrainer(double mutationRate, int generationSize) throws IOException, InterruptedException, ClassNotFoundException {
         super(mutationRate, generationSize);
@@ -28,26 +29,28 @@ public class MultiThreadNeuralTrainer extends NeuralTrainer{
     }
 
     @Override
-    public void doGen() throws InterruptedException, IOException, ClassNotFoundException, ExecutionException {
+    public void doGen() throws InterruptedException, IOException, ClassNotFoundException, ExecutionException, SQLException {
         NeuralNetwork bestNnw = previousBest;
         int highestScore = getTotalTreat(bestNnw, game, delay);
         int indexOfHighestScore = -1;
         NeuralNetwork[] currentGen = createGen(bestNnw);
 
-        List<NnwPlayGameAvrage> npg = new ArrayList<>();
+        List<NnwPlayGame> npg = new ArrayList<>();
         for (int i = 0; i < generationSize; i++) {
-            npg.add(new NnwPlayGameAvrage(currentGen[i], 5));
+            npg.add(new NnwPlayGame(currentGen[i]));
         }
 
         List<Future<Integer>> scores = service.invokeAll(npg);
+        int[] scoresArr = new int[scores.size()];
         for (int i = 0; i < generationSize; i++) {
             int score = scores.get(i).get();
-            dbService.submit(new ScoreDbTask(score));
+            scoresArr[i] = score;
             if (score >= highestScore){
                 highestScore = score;
                 indexOfHighestScore = i;
             }
         }
+        insertAllScores(scoresArr);
         if (indexOfHighestScore != -1){
             bestNnw = currentGen[indexOfHighestScore];
             if (scores.get(indexOfHighestScore).get() > highScore){
@@ -129,14 +132,4 @@ class MutateNetwork implements Callable<NeuralNetwork> {
     }
 }
 
-class ScoreDbTask implements Runnable {
-    int score;
-    ScoreDbTask(int score) {
-        this.score = score;
-    }
 
-    @Override
-    public void run() {
-        DataLogger.writeScoreToDb(score);
-    }
-}
