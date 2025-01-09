@@ -11,7 +11,6 @@ public class DataLogger {
     private static final String username = "java";
     private static final String password = "password";
     static Connection connection;
-    static int genID = 0;
     static ExecutorService dbService = Executors.newFixedThreadPool(100);
 
     static {
@@ -25,17 +24,17 @@ public class DataLogger {
     public static void main(String[] args) throws SQLException {
     }
 
-    public static void writeGenToDB(int gen, int generationSize, double mutationRate, int hiddenLayers, int hiddenLayerSize) throws IOException, SQLException {
-        String sql = "INSERT INTO generations(Gen, GenerationSize, MutationRate, HiddenLayers, HiddenLayerSize) VALUES(?,?,?,?,?)";
+    public static void writeGenToDB(int gen, int generationSize, double mutationRate, int hiddenLayers, int hiddenLayerSize, int genHighScore) throws IOException, SQLException {
+        String sql = "INSERT INTO generations(Gen, GenerationSize, MutationRate, HiddenLayers, HiddenLayerSize, HighScore) VALUES(?,?,?,?,?,?)";
         PreparedStatement pst = connection.prepareStatement(sql);
         pst.setInt(1, gen);
         pst.setInt(2, generationSize);
         pst.setDouble(3, mutationRate);
         pst.setInt(4, hiddenLayers);
         pst.setInt(5, hiddenLayerSize);
+        pst.setInt(6, genHighScore);
         pst.execute();
         pst.close();
-        genID++;
     }
 
     public static void writeScoreToDb(int score) throws SQLException {
