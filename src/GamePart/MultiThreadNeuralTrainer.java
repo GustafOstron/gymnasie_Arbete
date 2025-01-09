@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.*;
 
-import static src.DataLogger.insertAllScores;
 import static src.GamePart.NeuralTrainer.getTotalTreat;
 
 public class MultiThreadNeuralTrainer extends NeuralTrainer{
@@ -41,16 +40,15 @@ public class MultiThreadNeuralTrainer extends NeuralTrainer{
         }
 
         List<Future<Integer>> scores = service.invokeAll(npg);
-        int[] scoresArr = new int[scores.size()];
         for (int i = 0; i < generationSize; i++) {
             int score = scores.get(i).get();
-            scoresArr[i] = score;
             if (score >= highestScore){
                 highestScore = score;
                 indexOfHighestScore = i;
             }
         }
-        insertAllScores(scoresArr);
+        genHighscore = highestScore;
+
         if (indexOfHighestScore != -1){
             bestNnw = currentGen[indexOfHighestScore];
             if (scores.get(indexOfHighestScore).get() > highScore){
@@ -82,6 +80,12 @@ public class MultiThreadNeuralTrainer extends NeuralTrainer{
         }
         return l;
     }
+
+    public int getHighScore() {
+        return highScore;
+    }
+
+
 }
 
 class NnwPlayGame implements Callable<Integer> {

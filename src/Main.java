@@ -28,18 +28,19 @@ public class Main {
     }
 
     public static void exeperiment() throws IOException, ClassNotFoundException, ExecutionException, InterruptedException, SQLException {
-        int genSize = 10000;
+        int genSize = 1000;
         NeuralTrainer nt = new MultiThreadNeuralTrainer(0, genSize);
         for (double mutationRate = 0.05; mutationRate <= 0.5; mutationRate+=0.05) {
             nt.setMutationRate(mutationRate);
             for (int lager = 1; lager <= 10; lager++) {
-                for (int nevroner = 1; nevroner <= 64; nevroner++) {
+                for (int nevroner = 1; nevroner <= 30; nevroner++) {
                     nt.setPreviousBest(new NeuralNetwork(16,lager,nevroner,4));
                     for (int gen = 1; gen <= 100; gen++) {
-                        DataLogger.writeGenToDB(gen, genSize, mutationRate, lager, nevroner);
                         nt.doGen();
                         System.out.printf("Gen %s done: layerSize=%s, layers=%s, mutationRate=%s%n", gen, nevroner, lager, mutationRate);
+                        DataLogger.addGenToBatch(gen, genSize, mutationRate, lager, nevroner, nt.getGenHighscore());
                     }
+                    DataLogger.sendBatch();
                 }
             }
         }

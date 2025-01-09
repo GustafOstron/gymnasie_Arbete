@@ -14,6 +14,7 @@ public class NeuralTrainer {
     double mutationRate;
     int generationSize;
     int delay = 0;
+    int genHighscore;
     NeuralNetwork previousBest;
     public File nnwSaveFile;
     public Gamable game = new GameWhithoutWindow();
@@ -63,6 +64,10 @@ public class NeuralTrainer {
 
     public void setNnwSaveFile(File nnwSaveFile) {
         this.nnwSaveFile = nnwSaveFile;
+    }
+
+    public int getGenHighscore() {
+        return genHighscore;
     }
 
     public void done() throws IOException {
