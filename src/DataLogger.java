@@ -8,9 +8,9 @@ public class DataLogger {
     private static final String url = "jdbc:mysql://localhost:3306/gymnasieprojekt";
     private static final String username = "java";
     private static final String password = "password";
-    static Connection connection;
-    static String sql = "INSERT INTO generations(Gen, GenerationSize, MutationRate, HiddenLayers, HiddenLayerSize, HighScore) VALUES(?,?,?,?,?,?)";
-    static PreparedStatement pst;
+    private static Connection connection;
+    private static String sql = "INSERT INTO generations(Gen, GenerationSize, MutationRate, HiddenLayers, HiddenLayerSize, HighScore) VALUES(?,?,?,?,?,?)";
+    private static PreparedStatement pst;
 
     static {
         try {

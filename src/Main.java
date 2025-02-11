@@ -12,24 +12,31 @@ import java.util.concurrent.ExecutionException;
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException, ExecutionException, SQLException {
         Scanner s = new Scanner(System.in);
-        /*
-        NeuralTrainer nt = new NeuralTrainer(0.5, 10000);
+
+        NeuralTrainer nt = new NeuralTrainer(0.5, 1000);
+        nt.setGame(new Game());
         nt.setGameVis(false);
-        nt.setDelay(300);
-        nt.networkPlayAGame();
+        nt.setDelay(0);
+        nt.setMultiThread(true);
+        //nt.setAveragePlay(false);
+        //nt.setNrAvragePlaye(100);
+        //nt.networkPlayAGame();
 
         for (int i = 0; i < 10000000; i++) {
             nt.doGen();
             System.out.println("gen " + (i) + " done");
         }
 
-         */
+         /*
         exeperiment();
+
+          */
     }
 
     public static void exeperiment() throws IOException, ClassNotFoundException, ExecutionException, InterruptedException, SQLException {
         int genSize = 1000;
-        NeuralTrainer nt = new MultiThreadNeuralTrainer(0, genSize);
+        NeuralTrainer nt = new NeuralTrainer(0, genSize);
+        nt.setMultiThread(true);
         for (double mutationRate = 0.05; mutationRate <= 0.5; mutationRate+=0.05) {
             nt.setMutationRate(mutationRate);
             for (int lager = 1; lager <= 10; lager++) {

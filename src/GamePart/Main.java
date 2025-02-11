@@ -8,10 +8,11 @@ import src.Neurals.NeuralNetwork;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    static Game game;
+    //static Game game;
     static NeuralNetwork nnw;
     public static void main(String[] args) {
         //int[][] playingField = {{2,2,0,4},{0,0,4,4},{512,1024,2048,0},{0,0,0,0}};
+        /*
         game = new Game();
         nnw = new NeuralNetwork(16,3,20,4);
         game.addKeyListener(keyListnerBuilder());
@@ -19,9 +20,12 @@ public class Main {
 
         game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         game.setVisible(true);
+
+         */
     }
 
     public static KeyListener keyListnerBuilder(){
+        /*
         return new KeyListener(){
             @Override
             public void keyTyped(KeyEvent e) {}
@@ -47,14 +51,16 @@ public class Main {
                     default:
                         break;
                 }
-                /*
-                double[] dou = blockValueToNeuronInput(game.getPlayingField()).stream().mapToDouble(Double::doubleValue).toArray();
-                double[] det = Arrays.copyOf(dou, 16);
-                System.out.println(Arrays.toString(nnw.getOutput(det)));
 
-                 */
+                //double[] dou = blockValueToNeuronInput(game.getPlayingField()).stream().mapToDouble(Double::doubleValue).toArray();
+                //double[] det = Arrays.copyOf(dou, 16);
+                //System.out.println(Arrays.toString(nnw.getOutput(det)));
+
+
             }
         };
+        */
+        return null;
     }
 }
 

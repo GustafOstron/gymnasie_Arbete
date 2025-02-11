@@ -9,5 +9,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="mysql.connector.java" level="project" />
+    <orderEntry type="library" name="jcuda" level="project" />
+    <orderEntry type="library" name="jcuda.jcublas" level="project" />
   </component>
 </module>
