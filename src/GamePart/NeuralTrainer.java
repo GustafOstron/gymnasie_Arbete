@@ -230,8 +230,7 @@ public class NeuralTrainer {
     public NeuralNetwork[] createGen(final NeuralNetwork nnw) throws InterruptedException, ExecutionException {
         NeuralNetwork[] l = new NeuralNetwork[generationSize];
         for (int i = 0; i < generationSize; i++) {
-            NeuralNetwork temp = new NeuralNetwork(nnw);
-            l[i] = temp;
+            l[i] =  new NeuralNetwork(nnw);
             l[i].mutate(mutationRate);
         }
         return l;
